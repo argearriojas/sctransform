@@ -467,7 +467,7 @@ get_model_pars <- function(genes_step1, bin_size, umi, model_str, cells_step1,
         if (method == "glmGamPoi") {
           return(fit_glmGamPoi(umi = umi_bin_worker, model_str = model_str, data = data_step1))
         }
-      }
+      }, future.seed = TRUE
     )
     model_pars[[i]] <- do.call(rbind, par_lst)
 
@@ -502,7 +502,7 @@ get_model_pars_nonreg <- function(genes, bin_size, model_pars_fit, regressor_dat
                                         offs <- mu[gene, ]
                                         fit <- glm(as.formula(model_str_nonreg), data = cell_attr, family = fam, offset=offs)
                                         return(fit$coefficients)
-                                      }))
+                                      }, future.seed = TRUE))
     if (verbosity > 1) {
       setTxtProgressBar(pb, i)
     }

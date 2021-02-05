@@ -95,14 +95,14 @@ compare_expression <- function(x, umi, group, val1, val2, method = 'LRT', bin_si
     if (method == 't_test') {
       bin_res <- future_lapply(genes_bin, function(gene) {
         model_comparison_ttest(y[gene, use_cells], group)
-      })
+      }, future.seed = TRUE)
     }
     if (method == 'LRT') {
       mu <- x$model_pars_fit[genes_bin, -1, drop=FALSE] %*% t(regressor_data)  # in log space
       y <- as.matrix(umi[genes_bin, use_cells])
       bin_res <- future_lapply(genes_bin, function(gene) {
         model_comparison_lrt(y[gene, ], mu[gene, ], x$model_pars_fit[gene, 'theta'], group, weights)
-      })
+      }, future.seed = TRUE)
     }
     if (method == 'LRT_reg') {
       LB <- min(x$genes_log_mean_step1)
@@ -174,7 +174,7 @@ compare_expression <- function(x, umi, group, val1, val2, method = 'LRT', bin_si
       names(y_theta) <- genes_bin
       bin_res <- future_lapply(genes_bin, function(gene) {
         return(model_comparison_lrt_free3(gene, y[gene, ], y_theta[gene], x$model_str, cell_attr, group, weights, randomize))
-      })
+      }, future.seed = TRUE)
     }
     res[[i]] <- do.call(rbind, bin_res)
     if (verbosity > 1) {
